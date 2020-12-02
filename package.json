@@ -7,7 +7,8 @@
   "scripts": {
     "build": "just-scripts build",
     "just": "just-scripts",
-    "start": "npm run build && node --inspect-brk ./lib-commonjs/index.js",
+    "start": "ts-node src/index.ts",
+    "debug": "node -r ts-node/register --inspect-brk src/index.ts",
     "test": "just-scripts test",
     "change": "beachball change",
     "gen": "plop"
@@ -15,6 +16,7 @@
   "devDependencies": {
     "just-stack-single-lib": "^1.0.0",
     "just-scripts": "^0.27.0",
-    "beachball": "^1.12.1"
+    "beachball": "^1.12.1",
+    "ts-node": "^9.0.0"
   }
 }
