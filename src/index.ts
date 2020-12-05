@@ -2,6 +2,7 @@ import * as DecOne from "./Dec1";
 import * as DecTwo from "./Dec2";
 import * as DecThree from "./Dec3";
 import * as DecFour from './Dec4';
+import * as DecFive from './Dec5';
 
 function consoleGroup(groupName: string, work: () => void) {
   console.group(groupName);
@@ -54,3 +55,22 @@ consoleGroup("December 4", () => {
   console.log(DecFour.countValidPassports(DecFour.loadPassports(), DecFour.passportPolicy1));
   console.log(DecFour.countValidPassports(DecFour.loadPassports(), DecFour.passportPolicy2));
 });
+
+consoleGroup("December 5", () => {
+  const seatKeys = DecFive.loadSeatRoutes()
+    .map(DecFive.findSeat.bind(undefined, 8, 128))
+    .map(DecFive.getSeatKey)
+    .sort((a, b) => b - a);
+
+  console.log(seatKeys[0]);
+
+  // Find missing seat
+  for (let i = 0; i < seatKeys.length; i++) {
+    if (i === 0) {
+      continue;
+    }
+    if (seatKeys[i] + 1 !== seatKeys[i - 1]) {
+      console.log(`Found missing seat between: ${seatKeys[i]}, ${seatKeys[i - 1]}`)
+    }
+  }
+})
