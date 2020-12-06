@@ -3,6 +3,7 @@ import * as DecTwo from "./Dec2";
 import * as DecThree from "./Dec3";
 import * as DecFour from './Dec4';
 import * as DecFive from './Dec5';
+import * as DecSix from './Dec6';
 
 function consoleGroup(groupName: string, work: () => void) {
   console.group(groupName);
@@ -73,4 +74,19 @@ consoleGroup("December 5", () => {
       console.log(`Found missing seat between: ${seatKeys[i]}, ${seatKeys[i - 1]}`)
     }
   }
+})
+
+consoleGroup("December 6", () => {
+  const allAnswers = DecSix.loadAnswers();
+  const questionsAnsweredByAnyone = allAnswers
+    .map(DecSix.getQuestionsAnyoneAnswered);
+  const questionsAnsweredByEveryone = allAnswers
+    .map(DecSix.getQuestionsEveryoneAnswered);
+
+  const sumAnswerCount = (answers: string[][]) => answers
+    .map(val => val.length)
+    .reduce((accum, curr) => accum + curr, 0);
+
+  console.log(sumAnswerCount(questionsAnsweredByAnyone));
+  console.log(sumAnswerCount(questionsAnsweredByEveryone))
 })
