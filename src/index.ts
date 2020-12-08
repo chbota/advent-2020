@@ -152,7 +152,7 @@ measurePerf("December 7 - Tree Approach", () => {
         );
       }).length;
     },
-    100
+    1
   );
 
   measurePerf(
@@ -194,6 +194,7 @@ measurePerf("December 7 - Graph Approach", () => {
         "shiny gold",
         "outgoing",
         true /*countDuplicates*/
-      ) - 1 // subtract 1 to not count "shiny gold"
+      ) - 1, // subtract 1 to not count "shiny gold"
+    100
   );
 });
