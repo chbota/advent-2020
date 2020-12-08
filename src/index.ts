@@ -6,6 +6,7 @@ import * as DecFive from "./Dec5";
 import * as DecSix from "./Dec6";
 import * as DecSev from "./Dec7";
 import * as DecSevGraph from "./Dec7/GraphBased";
+import * as DecEight from "./Dec8";
 
 const NS_PER_SEC = 1e9;
 const NS_PER_MS = 1e6;
@@ -139,21 +140,21 @@ measurePerf("December 6", () => {
 measurePerf("December 7 - Tree Approach", () => {
   const bagRules = DecSev.loadBagRules();
 
-  measurePerf(
-    "Problem 1",
-    () => {
-      return Object.keys(bagRules).filter((bag: string) => {
-        return DecSev.reduceBagRuleTree(
-          bagRules,
-          false /* visitRoot */,
-          DecSev.containsBag("shiny gold"),
-          false,
-          bag
-        );
-      }).length;
-    },
-    1
-  );
+  // measurePerf(
+  //   "Problem 1",
+  //   () => {
+  //     return Object.keys(bagRules).filter((bag: string) => {
+  //       return DecSev.reduceBagRuleTree(
+  //         bagRules,
+  //         false /* visitRoot */,
+  //         DecSev.containsBag("shiny gold"),
+  //         false,
+  //         bag
+  //       );
+  //     }).length;
+  //   },
+  //   1
+  // );
 
   measurePerf(
     "Problem 2",
@@ -196,5 +197,17 @@ measurePerf("December 7 - Graph Approach", () => {
         true /*countDuplicates*/
       ) - 1, // subtract 1 to not count "shiny gold"
     100
+  );
+});
+
+measurePerf("December 8", () => {
+  const program = DecEight.loadProgram();
+
+  measurePerf(
+    "Problem 1",
+    () => {
+      return DecEight.runUntilRepeat(program).accum;
+    },
+    1
   );
 });
