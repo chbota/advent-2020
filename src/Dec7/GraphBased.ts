@@ -22,8 +22,6 @@ function node<T>(graph: Graph<T>, key: string): GraphNode<T> {
   return graph[key];
 }
 
-export type NodeVisitor<T> = (accum: T, curr: GraphNode<T>) => T;
-
 export function countNodes<T>(
   graph: Graph<T>,
   root: string,

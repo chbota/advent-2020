@@ -203,11 +203,7 @@ measurePerf("December 7 - Graph Approach", () => {
 measurePerf("December 8", () => {
   const program = DecEight.loadProgram();
 
-  measurePerf(
-    "Problem 1",
-    () => {
-      return DecEight.runUntilRepeat(program).accum;
-    },
-    1
-  );
+  measurePerf("Problem 1", () => {
+    return DecEight.runUntilRepeat(program).accum;
+  });
 });
