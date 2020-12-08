@@ -5,37 +5,50 @@ import * as DecFour from "./Dec4";
 import * as DecFive from "./Dec5";
 import * as DecSix from "./Dec6";
 import * as DecSev from "./Dec7";
+import * as DecSevGraph from "./Dec7/GraphBased";
 
 const NS_PER_SEC = 1e9;
 const NS_PER_MS = 1e6;
 
-function measurePerf(work: () => void, iterations: number = 1) {
-  const runs: number[] = [];
-  for (let i = 0; i < iterations; i++) {
-    const start = process.hrtime();
-    work();
-    const endDiff = process.hrtime(start);
-    runs.push((endDiff[0] * NS_PER_SEC + endDiff[1]) / NS_PER_MS);
-  }
-  console.log(
-    `${iterations} runs, avg ${
-      runs.reduce((accum, curr) => accum + curr, 0) / runs.length
-    }ms`
-  );
+function measurePerf<T>(
+  groupName: string,
+  work: () => T,
+  iterations: number = 1
+) {
+  consoleGroup(groupName, () => {
+    const runs: number[] = [];
+    let result: T | undefined = undefined;
+
+    for (let i = 0; i < iterations; i++) {
+      const start = process.hrtime();
+      result = work();
+      const endDiff = process.hrtime(start);
+      runs.push((endDiff[0] * NS_PER_SEC + endDiff[1]) / NS_PER_MS);
+    }
+
+    if (result !== undefined) {
+      console.log(result);
+    }
+    console.log(
+      `${iterations} runs, avg ${
+        runs.reduce((accum, curr) => accum + curr, 0) / runs.length
+      }ms`
+    );
+  });
 }
 
 function consoleGroup(groupName: string, work: () => void) {
   console.group(groupName);
-  measurePerf(work);
+  work();
   console.groupEnd();
 }
 
-consoleGroup("December 1", () => {
+measurePerf("December 1", () => {
   console.log(DecOne.findSumTo2020(DecOne.loadData()));
   console.log(DecOne.findSum(DecOne.loadData(), 2020, 3));
 });
 
-consoleGroup("December 2", () => {
+measurePerf("December 2", () => {
   console.log(
     DecTwo.getNumValidPasswords(
       DecTwo.loadPasswordsAndPolicies(),
@@ -50,7 +63,7 @@ consoleGroup("December 2", () => {
   );
 });
 
-consoleGroup("December 3", () => {
+measurePerf("December 3", () => {
   const testData = DecThree.loadData();
 
   console.log(DecThree.countTreesToEdge(testData, 1 /*rise*/, 3 /*run*/));
@@ -71,7 +84,7 @@ consoleGroup("December 3", () => {
   console.log(multipliedCounts);
 });
 
-consoleGroup("December 4", () => {
+measurePerf("December 4", () => {
   console.log(
     DecFour.countValidPassports(
       DecFour.loadPassports(),
@@ -86,7 +99,7 @@ consoleGroup("December 4", () => {
   );
 });
 
-consoleGroup("December 5", () => {
+measurePerf("December 5", () => {
   const seatKeys = DecFive.loadSeatRoutes()
     .map(DecFive.findSeat.bind(undefined, 8, 128))
     .map(DecFive.getSeatKey)
@@ -107,7 +120,7 @@ consoleGroup("December 5", () => {
   }
 });
 
-consoleGroup("December 6", () => {
+measurePerf("December 6", () => {
   const allAnswers = DecSix.loadAnswers();
   const questionsAnsweredByAnyone = allAnswers.map(
     DecSix.getQuestionsAnyoneAnswered
@@ -123,22 +136,27 @@ consoleGroup("December 6", () => {
   console.log(sumAnswerCount(questionsAnsweredByEveryone));
 });
 
-consoleGroup("December 7", () => {
+measurePerf("December 7 - Tree Approach", () => {
   const bagRules = DecSev.loadBagRules();
 
-  const countBagsWithShinyGold = Object.keys(bagRules).filter((bag: string) => {
-    return DecSev.reduceBagRuleTree(
-      bagRules,
-      false /* visitRoot */,
-      DecSev.containsBag("shiny gold"),
-      false,
-      bag
-    );
-  }).length;
-
-  console.log(countBagsWithShinyGold);
+  measurePerf(
+    "Problem 1",
+    () => {
+      return Object.keys(bagRules).filter((bag: string) => {
+        return DecSev.reduceBagRuleTree(
+          bagRules,
+          false /* visitRoot */,
+          DecSev.containsBag("shiny gold"),
+          false,
+          bag
+        );
+      }).length;
+    },
+    100
+  );
 
   measurePerf(
+    "Problem 2",
     () =>
       DecSev.reduceBagRuleTree(
         bagRules,
@@ -148,5 +166,34 @@ consoleGroup("December 7", () => {
         "shiny gold"
       ),
     100
+  );
+});
+
+measurePerf("December 7 - Graph Approach", () => {
+  const graph = DecSevGraph.loadBagGraph();
+  measurePerf(
+    "Problem 1",
+    () => {
+      return (
+        DecSevGraph.countNodes(
+          graph,
+          "shiny gold",
+          "incoming",
+          false /*countDuplicates*/
+        ) - 1
+      ); // subtract 1 to not count "shiny gold"
+    },
+    100
+  );
+
+  measurePerf(
+    "Problem 2",
+    () =>
+      DecSevGraph.countNodes(
+        graph,
+        "shiny gold",
+        "outgoing",
+        true /*countDuplicates*/
+      ) - 1 // subtract 1 to not count "shiny gold"
   );
 });
