@@ -1,9 +1,11 @@
 import * as DecOne from "./Dec1";
 import * as DecTwo from "./Dec2";
 import * as DecThree from "./Dec3";
-import * as DecFour from './Dec4';
-import * as DecFive from './Dec5';
-import * as DecSix from './Dec6';
+import * as DecFour from "./Dec4";
+import * as DecFive from "./Dec5";
+import * as DecSix from "./Dec6";
+import * as DecSev from "./Dec7";
+import { BagRule } from "./Dec7";
 
 function consoleGroup(groupName: string, work: () => void) {
   console.group(groupName);
@@ -29,7 +31,7 @@ consoleGroup("December 2", () => {
       DecTwo.oneLetterAtPositionsPasswordValidator
     )
   );
-})
+});
 
 consoleGroup("December 3", () => {
   const testData = DecThree.loadData();
@@ -50,11 +52,21 @@ consoleGroup("December 3", () => {
 
   const multipliedCounts = treeCounts.reduce((accum, curr) => accum * curr, 1);
   console.log(multipliedCounts);
-})
+});
 
 consoleGroup("December 4", () => {
-  console.log(DecFour.countValidPassports(DecFour.loadPassports(), DecFour.passportPolicy1));
-  console.log(DecFour.countValidPassports(DecFour.loadPassports(), DecFour.passportPolicy2));
+  console.log(
+    DecFour.countValidPassports(
+      DecFour.loadPassports(),
+      DecFour.passportPolicy1
+    )
+  );
+  console.log(
+    DecFour.countValidPassports(
+      DecFour.loadPassports(),
+      DecFour.passportPolicy2
+    )
+  );
 });
 
 consoleGroup("December 5", () => {
@@ -71,22 +83,51 @@ consoleGroup("December 5", () => {
       continue;
     }
     if (seatKeys[i] + 1 !== seatKeys[i - 1]) {
-      console.log(`Found missing seat between: ${seatKeys[i]}, ${seatKeys[i - 1]}`)
+      console.log(
+        `Found missing seat between: ${seatKeys[i]}, ${seatKeys[i - 1]}`
+      );
     }
   }
-})
+});
 
 consoleGroup("December 6", () => {
   const allAnswers = DecSix.loadAnswers();
-  const questionsAnsweredByAnyone = allAnswers
-    .map(DecSix.getQuestionsAnyoneAnswered);
-  const questionsAnsweredByEveryone = allAnswers
-    .map(DecSix.getQuestionsEveryoneAnswered);
+  const questionsAnsweredByAnyone = allAnswers.map(
+    DecSix.getQuestionsAnyoneAnswered
+  );
+  const questionsAnsweredByEveryone = allAnswers.map(
+    DecSix.getQuestionsEveryoneAnswered
+  );
 
-  const sumAnswerCount = (answers: string[][]) => answers
-    .map(val => val.length)
-    .reduce((accum, curr) => accum + curr, 0);
+  const sumAnswerCount = (answers: string[][]) =>
+    answers.map((val) => val.length).reduce((accum, curr) => accum + curr, 0);
 
   console.log(sumAnswerCount(questionsAnsweredByAnyone));
-  console.log(sumAnswerCount(questionsAnsweredByEveryone))
-})
+  console.log(sumAnswerCount(questionsAnsweredByEveryone));
+});
+
+consoleGroup("December 7", () => {
+  const bagRules = DecSev.loadBagRules();
+
+  const countBagsWithShinyGold = Object.keys(bagRules).filter((bag: string) => {
+    return DecSev.reduceBagRuleTree(
+      bagRules,
+      false /* visitRoot */,
+      DecSev.containsBag("shiny gold"),
+      false,
+      bag
+    );
+  }).length;
+
+  console.log(countBagsWithShinyGold);
+
+  console.log(
+    DecSev.reduceBagRuleTree(
+      bagRules,
+      true /* visitRoot */,
+      DecSev.countBags,
+      0,
+      "shiny gold"
+    )
+  );
+});

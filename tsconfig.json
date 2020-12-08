@@ -8,6 +8,7 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "strictBindCallApply": true,
     "typeRoots": ["node_modules/@types", "node_modules/just-stack-single-lib/node_modules/@types"]
   },
 
