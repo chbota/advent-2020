@@ -5,11 +5,28 @@ import * as DecFour from "./Dec4";
 import * as DecFive from "./Dec5";
 import * as DecSix from "./Dec6";
 import * as DecSev from "./Dec7";
-import { BagRule } from "./Dec7";
+
+const NS_PER_SEC = 1e9;
+const NS_PER_MS = 1e6;
+
+function measurePerf(work: () => void, iterations: number = 1) {
+  const runs: number[] = [];
+  for (let i = 0; i < iterations; i++) {
+    const start = process.hrtime();
+    work();
+    const endDiff = process.hrtime(start);
+    runs.push((endDiff[0] * NS_PER_SEC + endDiff[1]) / NS_PER_MS);
+  }
+  console.log(
+    `${iterations} runs, avg ${
+      runs.reduce((accum, curr) => accum + curr, 0) / runs.length
+    }ms`
+  );
+}
 
 function consoleGroup(groupName: string, work: () => void) {
   console.group(groupName);
-  work();
+  measurePerf(work);
   console.groupEnd();
 }
 
@@ -121,13 +138,15 @@ consoleGroup("December 7", () => {
 
   console.log(countBagsWithShinyGold);
 
-  console.log(
-    DecSev.reduceBagRuleTree(
-      bagRules,
-      true /* visitRoot */,
-      DecSev.countBags,
-      0,
-      "shiny gold"
-    )
+  measurePerf(
+    () =>
+      DecSev.reduceBagRuleTree(
+        bagRules,
+        true /* visitRoot */,
+        DecSev.countBags,
+        0,
+        "shiny gold"
+      ),
+    100
   );
 });
