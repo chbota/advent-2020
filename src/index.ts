@@ -234,6 +234,6 @@ consoleGroup("December 8", () => {
       };
       return DecEight.runUntilRepeat(modifiedProgram).accum;
     },
-    1000
+    10
   );
 });
