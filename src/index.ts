@@ -212,12 +212,17 @@ consoleGroup("December 8", () => {
     () => {
       const graph = DecEight.createInstructionGraph(program);
 
-      const swappedId = DecEight.findPath(graph, "0", "643")?.filter((entry) =>
+      const route = DecEight.findPath(graph, "0", "643");
+      if (!route) {
+        throw new Error("Failed to find path");
+      }
+
+      const swappedId = route.filter((entry) =>
         entry.includes("-swap")
       )[0] as string;
 
       const swappedIndex = parseInt(
-        swappedId?.substr(0, swappedId?.indexOf("-"))
+        swappedId.substr(0, swappedId.indexOf("-"))
       );
 
       const modifiedProgram = {
