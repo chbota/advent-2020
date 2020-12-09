@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { Graph, GraphNode, node } from "../Graph";
 
 export const VALID_INSTRUCTIONS = ["jmp", "acc", "nop"] as const;
 export type Instruction = {
@@ -16,10 +17,119 @@ export type RuntimeState = {
   instructionPtr: number;
 };
 
-export function runUntilRepeat(program: Program): RuntimeState {
+export function findPath(
+  graph: Graph<Instruction>,
+  from: string,
+  to: string,
+  visited: { [key: string]: boolean } = {},
+  seenSwap: boolean = false
+): string[] | undefined {
+  if (visited[from]) {
+    return undefined;
+  }
+
+  const fromNode = node(graph, from);
+  if (from === to) {
+    return [from];
+  }
+
+  for (const edge of fromNode.outgoing) {
+    if (edge.key.includes("-swap") && seenSwap) {
+      continue;
+    }
+    const newVisited: { [key: string]: boolean } = { ...visited, [from]: true };
+    const path = findPath(
+      graph,
+      edge.key,
+      to,
+      newVisited,
+      edge.key.includes("-swap") || seenSwap
+    );
+    if (path) {
+      return [from, ...path];
+    }
+  }
+
+  return undefined;
+}
+
+export function createInstructionGraph(program: Program): Graph<Instruction> {
+  const instructionGraph: Graph<Instruction> = {};
+  const getOrCreateNode = (idx: string) => {
+    const graphNode = instructionGraph[idx] ?? {
+      incoming: [],
+      outgoing: [],
+      val: undefined,
+    };
+
+    instructionGraph[idx] = graphNode;
+    return graphNode;
+  };
+
+  const addEdge = (
+    from: GraphNode<Instruction>,
+    fromId: string,
+    to: GraphNode<Instruction>,
+    toId: string
+  ) => {
+    from.outgoing.push({ key: toId, weight: 1 });
+    to.incoming.push({ key: fromId, weight: 1 });
+  };
+
+  program.instructions.forEach((curr, idx) => {
+    const graphNode = getOrCreateNode(String(idx));
+    graphNode.val = { ...curr };
+
+    const outgoingIndex =
+      graphNode.val.type === "jmp" ? idx + graphNode.val.arg : idx + 1;
+
+    addEdge(
+      graphNode,
+      String(idx),
+      getOrCreateNode(String(outgoingIndex)),
+      String(outgoingIndex)
+    );
+  });
+
+  // Add swapped nodes
+  // This could probably be done in a single iteration but this will be good enough
+  Object.entries(instructionGraph).forEach((entry) => {
+    if (entry[1].val === undefined || entry[1].val.type === "acc") {
+      return;
+    }
+
+    const swappedNodeId = entry[0] + "-swap";
+
+    const swappedNode = getOrCreateNode(swappedNodeId);
+    swappedNode.val = entry[1].val;
+    swappedNode.val.type = swappedNode.val.type === "jmp" ? "nop" : "jmp";
+
+    entry[1].incoming.forEach((edge) =>
+      addEdge(getOrCreateNode(edge.key), edge.key, swappedNode, swappedNodeId)
+    );
+
+    const swappedNodeOutgoingIndex =
+      swappedNode.val.type === "nop"
+        ? parseInt(entry[0]) + 1
+        : parseInt(entry[0]) + swappedNode.val.arg;
+
+    addEdge(
+      swappedNode,
+      swappedNodeId,
+      getOrCreateNode(String(swappedNodeOutgoingIndex)),
+      String(swappedNodeOutgoingIndex)
+    );
+  });
+
+  return instructionGraph;
+}
+
+export function runUntilRepeat(
+  program: Program,
+  runtime: RuntimeState = { accum: 0, instructionPtr: 0 }
+): RuntimeState {
   const seenInstructions: { [key: number]: boolean } = {};
 
-  let runtime = { accum: 0, instructionPtr: 0 };
   while (!seenInstructions[runtime.instructionPtr]) {
     seenInstructions[runtime.instructionPtr] = true;
     runtime = runStep(program, runtime);
@@ -30,27 +140,35 @@ export function runUntilRepeat(program: Program): RuntimeState {
 
 export function runStep(
   program: Program,
-  runtime: RuntimeState = { accum: 0, instructionPtr: 0 }
+  runtime: RuntimeState = { accum: 0, instructionPtr: 0 },
+  backwards: boolean = false
 ): RuntimeState {
-  if (runtime.instructionPtr >= program.instructions.length) {
-    throw new Error(`Instruction out of bounds: ${runtime.instructionPtr}`);
+  if (
+    (!backwards && runtime.instructionPtr >= program.instructions.length) ||
+    (backwards && runtime.instructionPtr <= 0)
+  ) {
+    return runtime; // program done
   }
 
   const instruction = program.instructions[runtime.instructionPtr];
 
   const nextState = { ...runtime };
+  let ptrDelta = 1;
   switch (instruction.type) {
     case "acc":
       nextState.accum += instruction.arg;
-      nextState.instructionPtr++;
       break;
     case "jmp":
-      nextState.instructionPtr += instruction.arg;
+      ptrDelta = instruction.arg;
       break;
     case "nop":
-      nextState.instructionPtr++;
       break;
   }
+
+  if (backwards) {
+    ptrDelta = -ptrDelta;
+  }
+  nextState.instructionPtr += ptrDelta;
 
   return nextState;
 }

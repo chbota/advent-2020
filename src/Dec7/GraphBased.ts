@@ -1,26 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-
-export type Edge = {
-  key: string;
-  weight: number;
-};
-
-export type GraphNode<T> = {
-  incoming: Edge[];
-  outgoing: Edge[];
-  val: T;
-};
-
-export type Graph<T> = { [key: string]: GraphNode<T> };
-
-function node<T>(graph: Graph<T>, key: string): GraphNode<T> {
-  if (!graph[key]) {
-    throw new Error(`${key} missing from graph ${Object.keys(graph)}`);
-  }
-
-  return graph[key];
-}
+import { Edge, Graph, GraphNode, node } from "../Graph";
 
 export function countNodes<T>(
   graph: Graph<T>,

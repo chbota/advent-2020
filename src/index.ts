@@ -206,4 +206,29 @@ measurePerf("December 8", () => {
   measurePerf("Problem 1", () => {
     return DecEight.runUntilRepeat(program).accum;
   });
+
+  measurePerf(
+    "Problem 2",
+    () => {
+      const graph = DecEight.createInstructionGraph(program);
+
+      const swappedId = DecEight.findPath(graph, "0", "643")?.filter((entry) =>
+        entry.includes("-swap")
+      )[0] as string;
+
+      const swappedIndex = parseInt(
+        swappedId?.substr(0, swappedId?.indexOf("-"))
+      );
+
+      const modifiedProgram = {
+        instructions: [...program.instructions],
+      };
+      modifiedProgram.instructions[swappedIndex] = {
+        ...modifiedProgram.instructions[swappedIndex],
+        type: program.instructions[swappedIndex].type === "jmp" ? "nop" : "jmp",
+      };
+      return DecEight.runUntilRepeat(modifiedProgram).accum;
+    },
+    100
+  );
 });
