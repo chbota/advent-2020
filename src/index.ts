@@ -44,12 +44,12 @@ function consoleGroup(groupName: string, work: () => void) {
   console.groupEnd();
 }
 
-measurePerf("December 1", () => {
+consoleGroup("December 1", () => {
   console.log(DecOne.findSumTo2020(DecOne.loadData()));
   console.log(DecOne.findSum(DecOne.loadData(), 2020, 3));
 });
 
-measurePerf("December 2", () => {
+consoleGroup("December 2", () => {
   console.log(
     DecTwo.getNumValidPasswords(
       DecTwo.loadPasswordsAndPolicies(),
@@ -64,7 +64,7 @@ measurePerf("December 2", () => {
   );
 });
 
-measurePerf("December 3", () => {
+consoleGroup("December 3", () => {
   const testData = DecThree.loadData();
 
   console.log(DecThree.countTreesToEdge(testData, 1 /*rise*/, 3 /*run*/));
@@ -85,7 +85,7 @@ measurePerf("December 3", () => {
   console.log(multipliedCounts);
 });
 
-measurePerf("December 4", () => {
+consoleGroup("December 4", () => {
   console.log(
     DecFour.countValidPassports(
       DecFour.loadPassports(),
@@ -100,7 +100,7 @@ measurePerf("December 4", () => {
   );
 });
 
-measurePerf("December 5", () => {
+consoleGroup("December 5", () => {
   const seatKeys = DecFive.loadSeatRoutes()
     .map(DecFive.findSeat.bind(undefined, 8, 128))
     .map(DecFive.getSeatKey)
@@ -121,7 +121,7 @@ measurePerf("December 5", () => {
   }
 });
 
-measurePerf("December 6", () => {
+consoleGroup("December 6", () => {
   const allAnswers = DecSix.loadAnswers();
   const questionsAnsweredByAnyone = allAnswers.map(
     DecSix.getQuestionsAnyoneAnswered
@@ -137,7 +137,7 @@ measurePerf("December 6", () => {
   console.log(sumAnswerCount(questionsAnsweredByEveryone));
 });
 
-measurePerf("December 7 - Tree Approach", () => {
+consoleGroup("December 7 - Tree Approach", () => {
   const bagRules = DecSev.loadBagRules();
 
   // measurePerf(
@@ -170,7 +170,7 @@ measurePerf("December 7 - Tree Approach", () => {
   );
 });
 
-measurePerf("December 7 - Graph Approach", () => {
+consoleGroup("December 7 - Graph Approach", () => {
   const graph = DecSevGraph.loadBagGraph();
   measurePerf(
     "Problem 1",
@@ -200,7 +200,7 @@ measurePerf("December 7 - Graph Approach", () => {
   );
 });
 
-measurePerf("December 8", () => {
+consoleGroup("December 8", () => {
   const program = DecEight.loadProgram();
 
   measurePerf("Problem 1", () => {
@@ -229,6 +229,6 @@ measurePerf("December 8", () => {
       };
       return DecEight.runUntilRepeat(modifiedProgram).accum;
     },
-    100
+    1000
   );
 });
