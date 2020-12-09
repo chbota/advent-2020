@@ -7,6 +7,7 @@ import * as DecSix from "./Dec6";
 import * as DecSev from "./Dec7";
 import * as DecSevGraph from "./Dec7/GraphBased";
 import * as DecEight from "./Dec8";
+import * as DecNine from "./Dec9";
 
 const NS_PER_SEC = 1e9;
 const NS_PER_MS = 1e6;
@@ -236,4 +237,22 @@ consoleGroup("December 8", () => {
     },
     10
   );
+});
+
+consoleGroup("December 9", () => {
+  const data = DecNine.loadData();
+  measurePerf("Problem 1", () => {
+    try {
+      DecNine.validateData(data);
+    } catch (e) {
+      return e;
+    }
+  });
+
+  measurePerf("Problem 2", () => {
+    const result: number[] = DecNine.findSumRange(data, 22406676)?.sort(
+      (a, b) => a - b
+    ) as number[];
+    return result[0] + result[result.length - 1];
+  });
 });
