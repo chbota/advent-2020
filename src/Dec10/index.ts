@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import { addEdge, getOrCreateNode, Graph } from "../Graph";
 
 function checkAdapterCompatibility(
   outletJoltage: number,
