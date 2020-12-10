@@ -68,37 +68,6 @@ export function countAllPaths(longestPath: number[]): number {
   return -1;
 }
 
-// this isnt used anymore, should delete
-export function createAdapterGraph(
-  sortedAdapters: number[],
-  start: number,
-  end: number
-) {
-  const graph: Graph<number> = {};
-
-  const targetJoltages = [start, ...sortedAdapters, end];
-
-  for (let i = 0; i < targetJoltages.length; i++) {
-    const currentJoltageNode = getOrCreateNode(
-      graph,
-      String(targetJoltages[i])
-    );
-
-    currentJoltageNode.val = targetJoltages[i];
-
-    // Add all outgoing nodes
-    [1, 2, 3].forEach((val) => {
-      addEdge(
-        graph,
-        String(targetJoltages[i]),
-        String(targetJoltages[i] + val)
-      );
-    });
-  }
-
-  return graph;
-}
-
 export function loadInput(): number[] {
   return fs
     .readFileSync(path.join(__dirname, "input.txt"), "utf8")
