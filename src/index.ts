@@ -8,6 +8,8 @@ import * as DecSev from "./Dec7";
 import * as DecSevGraph from "./Dec7/GraphBased";
 import * as DecEight from "./Dec8";
 import * as DecNine from "./Dec9";
+import * as DecTen from "./Dec10";
+import { findAllPaths } from "./Graph";
 
 const NS_PER_SEC = 1e9;
 const NS_PER_MS = 1e6;
@@ -254,5 +256,24 @@ consoleGroup("December 9", () => {
       (a, b) => a - b
     ) as number[];
     return result[0] + result[result.length - 1];
+  });
+});
+
+consoleGroup("December 10", () => {
+  const data = DecTen.loadInput();
+  const start = 0;
+  const end = data[data.length - 1] + 3;
+
+  let longestPath: { joltages: number[]; joltageDiffs: Map<number, number> };
+  measurePerf("Problem 1", () => {
+    longestPath = DecTen.tryUseAllAdapters(data, start, end);
+    return (
+      (longestPath.joltageDiffs.get(1) || 0) *
+      (longestPath.joltageDiffs.get(3) || 0)
+    );
+  });
+
+  measurePerf("Problem 2", () => {
+    return DecTen.countAllPaths(longestPath.joltages);
   });
 });

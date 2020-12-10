@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Graph, GraphNode, node } from "../Graph";
+import { addEdge, getOrCreateNode, Graph, GraphNode, node } from "../Graph";
 
 export const VALID_INSTRUCTIONS = ["jmp", "acc", "nop"] as const;
 export type Instruction = {
@@ -55,40 +55,15 @@ export function findPath(
 
 export function createInstructionGraph(program: Program): Graph<Instruction> {
   const instructionGraph: Graph<Instruction> = {};
-  const getOrCreateNode = (idx: string) => {
-    const graphNode = instructionGraph[idx] ?? {
-      incoming: [],
-      outgoing: [],
-      val: undefined,
-    };
-
-    instructionGraph[idx] = graphNode;
-    return graphNode;
-  };
-
-  const addEdge = (
-    from: GraphNode<Instruction>,
-    fromId: string,
-    to: GraphNode<Instruction>,
-    toId: string
-  ) => {
-    from.outgoing.push({ key: toId, weight: 1 });
-    to.incoming.push({ key: fromId, weight: 1 });
-  };
 
   program.instructions.forEach((curr, idx) => {
-    const graphNode = getOrCreateNode(String(idx));
+    const graphNode = getOrCreateNode(instructionGraph, String(idx));
     graphNode.val = { ...curr };
 
     const outgoingIndex =
       graphNode.val.type === "jmp" ? idx + graphNode.val.arg : idx + 1;
 
-    addEdge(
-      graphNode,
-      String(idx),
-      getOrCreateNode(String(outgoingIndex)),
-      String(outgoingIndex)
-    );
+    addEdge(instructionGraph, String(idx), String(outgoingIndex));
   });
 
   // Add swapped nodes
@@ -100,12 +75,12 @@ export function createInstructionGraph(program: Program): Graph<Instruction> {
 
     const swappedNodeId = entry[0] + "-swap";
 
-    const swappedNode = getOrCreateNode(swappedNodeId);
+    const swappedNode = getOrCreateNode(instructionGraph, swappedNodeId);
     swappedNode.val = entry[1].val;
     swappedNode.val.type = swappedNode.val.type === "jmp" ? "nop" : "jmp";
 
     entry[1].incoming.forEach((edge) =>
-      addEdge(getOrCreateNode(edge.key), edge.key, swappedNode, swappedNodeId)
+      addEdge(instructionGraph, edge.key, swappedNodeId)
     );
 
     const swappedNodeOutgoingIndex =
@@ -113,12 +88,7 @@ export function createInstructionGraph(program: Program): Graph<Instruction> {
         ? parseInt(entry[0]) + 1
         : parseInt(entry[0]) + swappedNode.val.arg;
 
-    addEdge(
-      swappedNode,
-      swappedNodeId,
-      getOrCreateNode(String(swappedNodeOutgoingIndex)),
-      String(swappedNodeOutgoingIndex)
-    );
+    addEdge(instructionGraph, swappedNodeId, String(swappedNodeOutgoingIndex));
   });
 
   return instructionGraph;
