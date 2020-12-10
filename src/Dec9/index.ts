@@ -1,5 +1,24 @@
 import * as fs from "fs";
 import * as path from "path";
+import { day, measurePerf } from "../Utils";
+
+day(9, () => {
+  const data = loadData();
+  measurePerf("Problem 1", () => {
+    try {
+      validateData(data);
+    } catch (e) {
+      return e;
+    }
+  });
+
+  measurePerf("Problem 2", () => {
+    const result: number[] = findSumRange(data, 22406676)?.sort(
+      (a, b) => a - b
+    ) as number[];
+    return result[0] + result[result.length - 1];
+  });
+});
 
 export function findSumRange(
   data: number[],

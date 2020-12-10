@@ -1,5 +1,27 @@
 import * as fs from "fs";
 import * as path from "path";
+import { day } from "../Utils";
+
+day(3, () => {
+  const testData = loadData();
+
+  console.log(countTreesToEdge(testData, 1 /*rise*/, 3 /*run*/));
+
+  const slopes = [
+    [1, 1],
+    [1, 3],
+    [1, 5],
+    [1, 7],
+    [2, 1],
+  ];
+
+  const treeCounts = slopes.map((slope) => {
+    return countTreesToEdge(testData, slope[0], slope[1]);
+  });
+
+  const multipliedCounts = treeCounts.reduce((accum, curr) => accum * curr, 1);
+  console.log(multipliedCounts);
+});
 
 export enum MapNode {
   Tree,

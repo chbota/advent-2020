@@ -1,5 +1,25 @@
 import * as fs from "fs";
 import * as path from "path";
+import { day, measurePerf } from "../Utils";
+
+day(10, () => {
+  const data = loadInput();
+  const start = 0;
+  const end = data[data.length - 1] + 3;
+
+  let longestPath: { joltages: number[]; joltageDiffs: Map<number, number> };
+  measurePerf("Problem 1", () => {
+    longestPath = tryUseAllAdapters(data, start, end);
+    return (
+      (longestPath.joltageDiffs.get(1) || 0) *
+      (longestPath.joltageDiffs.get(3) || 0)
+    );
+  });
+
+  measurePerf("Problem 2", () => {
+    return countAllPaths(longestPath.joltages);
+  });
+});
 
 function checkAdapterCompatibility(
   outletJoltage: number,

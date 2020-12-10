@@ -1,6 +1,45 @@
 import * as fs from "fs";
 import * as path from "path";
 import { addEdge, getOrCreateNode, Graph, GraphNode, node } from "../Graph";
+import { day, measurePerf } from "../Utils";
+
+day(8, () => {
+  const program = loadProgram();
+
+  measurePerf("Problem 1", () => {
+    return runUntilRepeat(program).accum;
+  });
+
+  measurePerf(
+    "Problem 2",
+    () => {
+      const graph = createInstructionGraph(program);
+
+      const route = findPath(graph, "0", "643");
+      if (!route) {
+        throw new Error("Failed to find path");
+      }
+
+      const swappedId = route.filter((entry) =>
+        entry.includes("-swap")
+      )[0] as string;
+
+      const swappedIndex = parseInt(
+        swappedId.substr(0, swappedId.indexOf("-"))
+      );
+
+      const modifiedProgram = {
+        instructions: [...program.instructions],
+      };
+      modifiedProgram.instructions[swappedIndex] = {
+        ...modifiedProgram.instructions[swappedIndex],
+        type: program.instructions[swappedIndex].type === "jmp" ? "nop" : "jmp",
+      };
+      return runUntilRepeat(modifiedProgram).accum;
+    },
+    10
+  );
+});
 
 export const VALID_INSTRUCTIONS = ["jmp", "acc", "nop"] as const;
 export type Instruction = {

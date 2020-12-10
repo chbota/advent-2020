@@ -1,5 +1,61 @@
 import * as fs from "fs";
 import * as path from "path";
+import { day, measurePerf } from "../Utils";
+import { countNodes, loadBagGraph } from "./GraphBased";
+
+day(7.1, () => {
+  const bagRules = loadBagRules();
+
+  // measurePerf(
+  //   "Problem 1",
+  //   () => {
+  //     return Object.keys(bagRules).filter((bag: string) => {
+  //       return DecSev.reduceBagRuleTree(
+  //         bagRules,
+  //         false /* visitRoot */,
+  //         DecSev.containsBag("shiny gold"),
+  //         false,
+  //         bag
+  //       );
+  //     }).length;
+  //   },
+  //   1
+  // );
+
+  measurePerf(
+    "Problem 2",
+    () =>
+      reduceBagRuleTree(
+        bagRules,
+        true /* visitRoot */,
+        countBags,
+        0,
+        "shiny gold"
+      ),
+    100
+  );
+});
+
+day(7.2, () => {
+  const graph = loadBagGraph();
+  measurePerf(
+    "Problem 1",
+    () => {
+      return (
+        countNodes(graph, "shiny gold", "incoming", false /*countDuplicates*/) -
+        1
+      ); // subtract 1 to not count "shiny gold"
+    },
+    100
+  );
+
+  measurePerf(
+    "Problem 2",
+    () =>
+      countNodes(graph, "shiny gold", "outgoing", true /*countDuplicates*/) - 1, // subtract 1 to not count "shiny gold"
+    100
+  );
+});
 
 export type BagRule = {
   bagName: string;
