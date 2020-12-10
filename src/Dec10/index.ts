@@ -42,14 +42,6 @@ export function tryUseAllAdapters(
 }
 
 export function countAllPaths(longestPath: number[]): number {
-  const possibleNextAdapters: { [key: number]: number[] } = {};
-
-  for (let i = 0; i < longestPath.length; i++) {
-    const searchSlice = longestPath.slice(i + 1, i + 4);
-    possibleNextAdapters[longestPath[i]] = searchSlice.filter(
-      (val) => checkAdapterCompatibility(longestPath[i], val).isCompatible
-    );
-  }
   const pathsToNode: { [key: number]: number } = {};
 
   for (let i = 0; i < longestPath.length; i++) {
@@ -58,7 +50,12 @@ export function countAllPaths(longestPath: number[]): number {
       return pathsToCurrentNode;
     }
 
-    const possibleNextNodes = possibleNextAdapters[longestPath[i]];
+    const searchSlice = longestPath.slice(i + 1, i + 4);
+
+    const possibleNextNodes = searchSlice.filter(
+      (val) => checkAdapterCompatibility(longestPath[i], val).isCompatible
+    );
+
     possibleNextNodes.forEach((next) => {
       pathsToNode[next] = (pathsToNode[next] ?? 0) + pathsToCurrentNode;
     });
