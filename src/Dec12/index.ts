@@ -23,9 +23,9 @@ day(12, () => {
     const startingPosition: Position = {
       boatX: 0,
       boatY: 0,
+      direction: "E",
       waypointX: 10,
       waypointY: -1,
-      direction: "E",
     };
     let endingPosition = startingPosition;
     data.forEach(
@@ -165,16 +165,6 @@ export function rotateWaypoint(
   startingPosition: Position,
   degrees: number
 ): Position {
-  // N, E, S, W
-  // W, N, E, S
-  // 90:
-  const offsets = [
-    startingPosition.waypointY < 0 ? Math.abs(startingPosition.waypointY) : 0,
-    startingPosition.waypointX > 0 ? startingPosition.waypointX : 0,
-    startingPosition.waypointY > 0 ? startingPosition.waypointY : 0,
-    startingPosition.waypointX < 0 ? Math.abs(startingPosition.waypointX) : 0,
-  ];
-
   const shiftRight = degrees > 0;
   switch (Math.abs(degrees)) {
     case 90:
