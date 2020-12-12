@@ -12,6 +12,7 @@ require("./Dec8");
 require("./Dec9");
 require("./Dec10");
 require("./Dec11");
+require("./Dec12");
 
 const registeredDays = getRegisteredDays();
 
