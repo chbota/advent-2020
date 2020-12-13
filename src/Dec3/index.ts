@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { day } from "../Utils";
+import { day } from "../utils";
 
 day(3, () => {
   const testData = loadData();

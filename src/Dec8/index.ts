@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { addEdge, getOrCreateNode, Graph, GraphNode, node } from "../Graph";
-import { day, measurePerf } from "../Utils";
+import { day, measurePerf } from "../utils";
 
 day(8, () => {
   const program = loadProgram();

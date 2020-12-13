@@ -1,4 +1,4 @@
-import { getRegisteredDays } from "./Utils";
+import { getRegisteredDays } from "./utils";
 import caporal from "caporal";
 
 require("./Dec1");
@@ -13,6 +13,7 @@ require("./Dec9");
 require("./Dec10");
 require("./Dec11");
 require("./Dec12");
+require("./Dec13");
 
 const registeredDays = getRegisteredDays();
 

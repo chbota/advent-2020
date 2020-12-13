@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { day } from "../Utils";
+import { day } from "../utils";
 
 day(1, () => {
   console.log(findSumTo2020(loadData()));

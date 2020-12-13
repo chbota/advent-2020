@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { day, measurePerf } from "../Utils";
+import { day, measurePerf } from "../utils";
 import { countNodes, loadBagGraph } from "./GraphBased";
 
 day(7.1, () => {

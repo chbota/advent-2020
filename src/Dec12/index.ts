@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { day, measurePerf } from "../Utils";
+import { day, measurePerf } from "../utils";
 
 day(12, () => {
   const data = loadData();
