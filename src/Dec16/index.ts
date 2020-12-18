@@ -56,36 +56,35 @@ day(16, () => {
         .map(() => new Set<Field>())
     );
 
-    const fieldAssignments: { [name: string]: number[] } = {};
-    for (const [idx, candidates] of fieldCandidates.entries()) {
-      for (const candidate of candidates) {
-        const existingAssignments = fieldAssignments[candidate.name];
+    const result: (Field | undefined)[] = Array(
+      filteredInput.fields.length
+    ).fill(undefined);
+    const fieldsUsed: { [field: string]: boolean } = {};
 
-        if (!existingAssignments) {
-          fieldAssignments[candidate.name] = [idx];
-          continue;
+    let runs = 1;
+    while (Object.entries(fieldsUsed).length !== result.length) {
+      runs++;
+      const getUnusedFields = (val: Set<Field>): Field[] => {
+        return [...val].filter((field) => !fieldsUsed[field.name]);
+      };
+
+      fieldCandidates.forEach((val, idx) => {
+        const unusedFields = getUnusedFields(val);
+        console.log(unusedFields);
+        if (unusedFields.length === 1) {
+          result[idx] = unusedFields[0];
+          fieldsUsed[unusedFields[0].name] = true;
         }
-
-        // there's another valid option that exists so
-        // use that instead of contending for this
-        if (candidates.size > 1) {
-          continue;
-        }
-
-        // there's only one valid option here so claim it
-        fieldAssignments[candidate.name] = [idx];
-      }
+      });
     }
 
-    console.log(fieldAssignments);
-    return Object.entries(fieldAssignments).reduce((acc, curr) => {
-      if (curr[1].length !== 1) {
-        throw new Error(`Invalid field assignment: ${acc}, ${curr}`);
+    console.log(runs, result);
+    return result.reduce((acc, curr, idx) => {
+      if (!curr) {
+        throw new Error(`Malformed result`);
       }
-
-      if (curr[0].startsWith("departure")) {
-        console.log(input.yourTicket[curr[1][0]]);
-        return acc * input.yourTicket[curr[1][0]];
+      if (curr.name.startsWith("departure")) {
+        return acc * input.yourTicket[idx];
       }
 
       return acc;
